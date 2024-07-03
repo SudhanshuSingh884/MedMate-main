@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "825123289320",
+    "firebase_url": "https://medmate-7b35b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "medmate-7b35b",
+    "storage_bucket": "medmate-7b35b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825123289320:android:a9d47d0170510ffc02b15d",
+        "android_client_info": {
+          "package_name": "com.example.medmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "825123289320-4bhlrrb46u5ktvk1g32vjvfufgb0gfkk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.medmate",
+            "certificate_hash": "4620133f312836009f02c9a28934807403f60ccb"
+          }
+        },
+        {
+          "client_id": "825123289320-p8ummqa82s066cqvjln9gavc0rcs4d0m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-0FsyILY3XGfjUHEqinsilmpjoSy6YGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "825123289320-p8ummqa82s066cqvjln9gavc0rcs4d0m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "825123289320-ae626n9bka97p01ddkml2tnhut206at4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.medmate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
