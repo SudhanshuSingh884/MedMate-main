@@ -1,0 +1,142 @@
+#include <Servo.h>
+#include <Arduino.h>
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
+const char* ssid="POCOX3";
+const char* password="kb3if3n3rz4gs94";
+#define API_KEY "AIzaSyA-0FsyILY3XGfjUHEqinsilmpjoSy6YGk"
+
+// Insert RTDB URLefine the RTDB URL */
+#define DATABASE_URL "https://medmate-7b35b-default-rtdb.asia-southeast1.firebasedatabase.app/"
+FirebaseData fbdo;  //this will handle the data  
+
+FirebaseAuth auth; // this will handle the authrntication
+FirebaseConfig config;// this will handle the config
+
+unsigned long sendDataPrevMillis = 0;
+int count = 0;
+int intValue=-1;
+float floatValue;
+bool signupOK = false;
+const int irSensorPin = 21;
+int servoPin=5;
+int Buzzer = 4;
+int x=3;
+Servo servo1;
+
+void setup() {
+  pinMode(12,OUTPUT);
+  pinMode(irSensorPin, INPUT);
+  pinMode (Buzzer, OUTPUT);
+  Serial.begin(115200);
+  servo1.attach(servoPin);
+  delay(5000);
+  WiFi.begin(ssid,password);
+  delay(5000);
+  Serial.print("hello bah");
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED){
+    Serial.print("hffh");
+    Serial.print(".");
+    delay(300);
+  }
+  Serial.println(WiFi.localIP());
+
+  // initWiFi();
+  Serial.print("RRSI: ");
+  Serial.println(WiFi.RSSI());
+
+  /* Assign the api key (required) */
+  config.api_key = API_KEY;
+
+  /* Assign the RTDB URL (required) */
+  config.database_url = DATABASE_URL;
+
+  /* Sign up */
+  if (Firebase.signUp(&config, &auth, "", "")){
+    Serial.println("ok");
+    signupOK = true;
+  }
+  else{
+    Serial.printf("vallun");
+    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+  }
+
+  /* Assign the callback function for the long running token generation task */
+  config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
+  
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+}
+
+void loop1() {
+  int currentReading;
+  
+    // Read the current state of the IR sensor
+    currentReading = digitalRead(irSensorPin);
+   
+    if(currentReading==LOW){// LOW TO HIGH
+      Serial.println("low");
+      count++;
+      if(count==2){
+        Serial.println("medicine taken");
+        count=0;
+        digitalWrite(12, LOW);
+        digitalWrite (Buzzer, LOW); 
+        x=3; //turn buzzer off
+        delay(5000);
+        for(int posDegrees = 180; posDegrees >= 0; posDegrees--) {
+              servo1.write(posDegrees);
+              Serial.println(posDegrees);
+              delay(20);
+            }
+
+         if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
+    sendDataPrevMillis = millis();
+
+
+        if (Firebase.RTDB.setInt(&fbdo, "/Alarm/opening", 0)){
+    }
+         }
+    else {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+  }
+      delay(5000);
+      
+    }
+}
+
+void loop(){
+  if (Firebase.ready() && signupOK ){
+    // Write an Int number on the database path test/int
+    if (Firebase.RTDB.getInt(&fbdo, "/Alarm/opening/")){
+      if (fbdo.dataType() == "int") {
+        intValue = fbdo.intData();
+        Serial.println(intValue);
+      }
+    }
+    else {
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+    
+  if(intValue == 1){
+        digitalWrite(12, HIGH);
+        digitalWrite (Buzzer, HIGH); //turn buzzer on
+
+        if(x==3){
+          for(int posDegrees = 0; posDegrees <= 180; posDegrees++) {
+          servo1.write(posDegrees);
+          // Serial.println(posDegrees);
+          delay(20);
+          x=4;
+        }
+        }
+        loop1();
+      }
+
+  }
+}
